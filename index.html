@@ -71,14 +71,13 @@
    	 	}
   	}
   document.addEventListener("keypress", function(event) {
-		switch(event.keyCode) {
-    case 122:  //z
-    break;
-		case 120://x
-    break;
-    
+    switch(event.keyCode) {
+      case 122:  //z
+      break;
+      case 120://x
+      break; 
     }
-  }
+  });
 	if (typeof (canvas.getContext) !== undefined) {
 		cx = canvas.getContext('2d');
 		gameLoop();
