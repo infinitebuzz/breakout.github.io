@@ -26,16 +26,51 @@
 		lastTime     =    (new Date()).getTime(),
 		currentTime  =    0,
 		delta = 0;
-
+	var level = "";
+	level += "################";
+	level += "#..............#";
+	level += "#..............#";
+	level += "#..............#";
+	level += "#..............#";
+	level += "#..............#";
+	level += "#..............#";
+	level += "#..............#";
+	level += "#..............#";
+	level += "#..............#";
+	level += "#..............#";
+	level += "#..............#";
+	level += "#..............#";
+	level += "#..............#";
+	level += "#..............#";
+	var nWidth = 16, nHeight = 15;
+	var nBlockSize = 8;
+	  
 	function gameLoop() {
 		window.requestAnimationFrame(gameLoop);
 		currentTime = (new Date()).getTime();
 		delta = (currentTime-lastTime);
 		//if(delta > fElapsedTime) 
 		{
-    }
-  }
-	document.addEventListener("keypress", function(event) {
+			cx.clearRect(0,0,cw,cw);
+			// Draw the level
+			for(var y = 0; y < nHeight; y++) {
+				for(var x = 0; x < nWdith; x++) {
+					switch(level.charAt(y*nWidth+x)) {
+					case '#':
+						cx.fillStyle = '#FFFFFF';
+						cx.fillRect(x * nBlockSize, y * nBlockSize, nBlockSize, nBlockSize);						
+						break;		
+					case '.':
+						cx.fillStyle = '#000000';
+						cx.fillRect(x * nBlockSize, y * nBlockSize, nBlockSize, nBlockSize);						
+						break;		
+					}
+				}
+			}
+
+   	 	}
+  	}
+  document.addEventListener("keypress", function(event) {
 		switch(event.keyCode) {
     case 122:  //z
     break;
