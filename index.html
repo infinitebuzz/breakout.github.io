@@ -44,7 +44,9 @@
 	level += "#..............#";
 	var nWidth = 16, nHeight = 15;
 	var nBlockSize = 8;
-	  
+	var fBat = 64.0;
+	var nBatWidth = 10;
+
 	function gameLoop() {
 		window.requestAnimationFrame(gameLoop);
 		currentTime = (new Date()).getTime();
@@ -71,15 +73,18 @@
 					}
 				}
 			}
-
-   	 	}
+			cx.fillStyle = '#FFFFFF';
+			cx.fillRect(fBat - nBatWidth, nHeight * nBlockSize - 2, nBatWidth * 2, nBlockSize);
+		}
   	}
   document.addEventListener("keypress", function(event) {
     switch(event.keyCode) {
       case 122:  //z
-      break;
-      case 120://x
-      break; 
+				fBat -= 3.0 * fElapsedTime * 0.1;
+  	    break;
+      case 120:	//x
+				fBat += 3.0 * fElapsedTime * 0.1;
+	      break; 
     }
   });
 	if (typeof (canvas.getContext) !== undefined) {
