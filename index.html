@@ -29,7 +29,7 @@
 	var level = "";
 	level += "################";
 	level += "#..............#";
-	level += "#..............#";
+	level += "#...11111111...#";
 	level += "#..............#";
 	level += "#..............#";
 	level += "#..............#";
@@ -62,6 +62,10 @@
 						break;		
 					case '.':
 						cx.fillStyle = '#000000';
+						cx.fillRect(x * nBlockSize, y * nBlockSize, nBlockSize, nBlockSize);						
+						break;		
+					case '1':
+						cx.fillStyle = '#00FF0';
 						cx.fillRect(x * nBlockSize, y * nBlockSize, nBlockSize, nBlockSize);						
 						break;		
 					}
