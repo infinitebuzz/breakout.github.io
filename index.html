@@ -7,12 +7,17 @@
   <title>Breakout!</title>
 </head>
 <body>
-  <canvas id="canvas" width="700" height="700"></canvas><br />
+  <canvas id="canvas" width="256" height="256"></canvas><br />
   <span id="instruct">Keys:  as </span> Score: <span id="stats">0</span>
   <script type="text/javascript">
  	var vendors = ['webkit', 'moz'];
 	var canvas = document.getElementById("canvas");
 	var divStats = document.getElementById("stats");
+	
+	function setCharAt(str,index,chr) {
+		if(index > str.length-1) return str;
+		return str.substr(0,index) + chr + str.substr(index+1);
+	}
 	for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
 		window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
 		window.cancelAnimationFrame =
@@ -21,7 +26,7 @@
 	var cw = canvas.width,
 		ch = canvas.height,
 		cx = null,
-		fps = 30,
+		fps = 10,
 		fElapsedTime =    1000/fps,
 		lastTime     =    (new Date()).getTime(),
 		currentTime  =    0,
@@ -30,6 +35,10 @@
 	level += "################";
 	level += "#..............#";
 	level += "#...11111111...#";
+	level += "#...11111111...#";
+	level += "#..............#";
+	level += "#...11..11.1...#";
+	level += "#...1.11..11...#";
 	level += "#..............#";
 	level += "#..............#";
 	level += "#..............#";
@@ -37,29 +46,74 @@
 	level += "#..............#";
 	level += "#..............#";
 	level += "#..............#";
-	level += "#..............#";
-	level += "#..............#";
-	level += "#..............#";
-	level += "#..............#";
+//	level += "################";
 	level += "#..............#";
 	var nWidth = 16, nHeight = 15;
-	var nBlockSize = 8;
+	var nBlockSize = 16;
 	var fBat = 64.0;
-	var nBatWidth = 10;
+	var nBatWidth = 12;
+	var fBallX = 7.0;
+	var fBallY = 7.0;
+	var fAng = Math.random() * 3.14158 * 2;
+	var fBallDX = Math.cos(fAng);
+	var fBallDY = Math.sin(fAng);
+	var fSpeed = 0.00001;
+	var fScore = 0;
 
 	function gameLoop() {
 		window.requestAnimationFrame(gameLoop);
 		currentTime = (new Date()).getTime();
 		delta = (currentTime-lastTime);
-		//if(delta > fElapsedTime) 
+		if(delta > fElapsedTime) 
 		{
+			lastTime = currentTime;
+			var fOldX = fBallX;
+			var fOldY = fBallY;
+			fBallX += fBallDX + fSpeed;
+			fBallY += fBallDY + fSpeed;
+			
+			var nCellOldX = Math.floor(fOldX);
+			var nCellOldY = Math.floor(fOldY);
+			var nCellNewX = Math.floor(fBallX);
+			var nCellNewY = Math.floor(fBallY);
+			var cNewCell = level.charAt(nCellNewY*nWidth+nCellNewX);
+			var cOldCell = level.charAt(nCellOldY*nWidth+nCellOldX);
+			if(cNewCell != '.') {
+				if(nCellNewX != nCellOldX && level.charAt(nCellOldY*nWidth+nCellNewX) != '.') {
+					// Left collision
+					fBallDX *= -1;
+					fBallX = fOldX;
+				}
+				if(nCellNewY != nCellOldY && level.charAt(nCellNewY*nWidth+nCellOldX) != '.') {
+					// Left collision
+					fBallDY *= -1;
+					fBallY = fOldY;
+				}
+				if(cNewCell == '1') {
+					level = setCharAt(level, nCellNewY*nWidth+nCellNewX, '.');
+					fScore += 1;
+				}
+			}
+			if(fBallY > (nHeight - 1)) {
+				if((fBallX > Math.floor((fBat - nBatWidth) / nBlockSize)) && (fBallX < Math.floor((fBat + nBatWidth + nBlockSize - 1)/ nBlockSize))) {
+					fBallY = fOldY;
+					fBallDY *= -1;
+				} else {
+					// Game 
+					fBallX = 7;
+					fBallY = 7;
+					fAng = Math.random() * 3.14158 * 2;
+					fBallDX = Math.cos(fAng);
+					fBallDY = Math.sin(fAng);
+				}
+			}
 			cx.clearRect(0,0,cw,cw);
 			// Draw the level
 			for(var y = 0; y < nHeight; y++) {
 				for(var x = 0; x < nWidth; x++) {
 					switch(level.charAt(y*nWidth+x)) {
 					case '#':
-						cx.fillStyle = '#FFFFFF';
+						cx.fillStyle = '#7F7F7F';
 						cx.fillRect(x * nBlockSize, y * nBlockSize, nBlockSize, nBlockSize);						
 						break;		
 					case '.':
@@ -73,18 +127,31 @@
 					}
 				}
 			}
+			cx.fillStyle = '#FFFF00';
+			cx.beginPath();
+			cx.arc(fBallX * nBlockSize, fBallY * nBlockSize, nBlockSize / 3, 0, 2 * Math.PI);
+			cx.closePath();
+			cx.fill();
 			cx.fillStyle = '#FFFFFF';
-			cx.fillRect(fBat - nBatWidth, nHeight * nBlockSize - 2, nBatWidth * 2, nBlockSize);
+			cx.fillRect(fBat - nBatWidth, (nHeight - 1) * nBlockSize , nBatWidth * 2, nBlockSize / 3);
+			
+			divStats.innerHTML = "Score: " + fScore;
 		}
   	}
   document.addEventListener("keypress", function(event) {
     switch(event.keyCode) {
       case 122:  //z
-				fBat -= 3.0 * fElapsedTime * 0.1;
+		fBat -= 3.0 * fElapsedTime * 0.1;
+		if(fBat <=  nBlockSize + (nBatWidth / 2)) {
+			fBat = nBlockSize + (nBatWidth / 2);
+		}
   	    break;
       case 120:	//x
-				fBat += 3.0 * fElapsedTime * 0.1;
-	      break; 
+		fBat += 3.0 * fElapsedTime * 0.1;
+		if(fBat >= cw - nBlockSize - (nBatWidth / 2)) {
+			fBat = cw - nBlockSize - (nBatWidth / 2);
+		}
+	    break; 
     }
   });
 	if (typeof (canvas.getContext) !== undefined) {
