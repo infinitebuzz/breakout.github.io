@@ -59,6 +59,8 @@
 	var fBallDY = Math.sin(fAng);
 	var fSpeed = 0.00001;
 	var fScore = 0;
+	var fKeyLeft = false;
+	var fKeyRight = false;
 
 	function gameLoop() {
 		window.requestAnimationFrame(gameLoop);
@@ -136,24 +138,48 @@
 			cx.fillRect(fBat - nBatWidth, (nHeight - 1) * nBlockSize , nBatWidth * 2, nBlockSize / 3);
 			
 			divStats.innerHTML = "Score: " + fScore;
+		
+			if(fKeyLeft) {
+				fBat -= 3.0 * fElapsedTime * 0.1;
+				if(fBat <=  nBlockSize + (nBatWidth / 2)) {
+					fBat = nBlockSize + (nBatWidth / 2);
+				}
+			}
+			if(fKeyRight) {
+				fBat += 3.0 * fElapsedTime * 0.1;
+				if(fBat >= cw - nBlockSize - (nBatWidth / 2)) {
+					fBat = cw - nBlockSize - (nBatWidth / 2);
+				}
+			}
 		}
   	}
-  document.addEventListener("keypress", function(event) {
-    switch(event.keyCode) {
-      case 122:  //z
-		fBat -= 3.0 * fElapsedTime * 0.1;
-		if(fBat <=  nBlockSize + (nBatWidth / 2)) {
-			fBat = nBlockSize + (nBatWidth / 2);
-		}
-  	    break;
-      case 120:	//x
-		fBat += 3.0 * fElapsedTime * 0.1;
-		if(fBat >= cw - nBlockSize - (nBatWidth / 2)) {
-			fBat = cw - nBlockSize - (nBatWidth / 2);
-		}
-	    break; 
-    }
-  });
+ 
+  window.addEventListener("keydown", function (event) {
+	    switch (event.keyCode) {
+	        case 65://'a':
+	            // left
+	            fKeyLeft = true;
+	            break;
+	        case 68://'d':
+	            // right
+	            fKeyRight = true;
+	            break;
+	    }
+	});
+
+	window.addEventListener("keyup", function (event) {
+	    switch (event.keyCode) {
+	        case 65:
+	            // left
+	            fKeyLeft = false;
+	            break;
+	        case 68:
+	            // right
+	            fKeyRight = false;
+	            break;
+	    }
+	});
+
 	if (typeof (canvas.getContext) !== undefined) {
 		cx = canvas.getContext('2d');
 		gameLoop();
